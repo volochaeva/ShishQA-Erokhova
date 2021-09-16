@@ -1,0 +1,5 @@
+TestRail:
+http://89.223.126.182/testrail/index.php?/runs/view/79&group_by=cases:section_id&group_order=asc
+
+YouTrack:
+http://89.223.126.182:8080/issues?q=project:%20%7Bcalc%7D%20State:%20Unresolved%20assignee:%20v.volochaeva@bk.ru
