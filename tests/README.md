@@ -5,5 +5,5 @@
 
 ```
 # Пример .env файла
-WEB_DRIVER_PATH=Е:\autotests
+WEB_DRIVER_PATH=Е:\\autotests
 ```
