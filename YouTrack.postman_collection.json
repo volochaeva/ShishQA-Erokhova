@@ -1,0 +1,322 @@
+{
+	"info": {
+		"_postman_id": "7e44a225-9b03-4e83-bf85-1726881d1670",
+		"name": "YouTrack",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"SetCollectionVariables\", function () {",
+							"    var jsonData = pm.response.json();",
+							"",
+							"    pm.collectionVariables.set(\"project_id\", jsonData.projects[2].id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://89.223.126.182:8080/api/admin/projects?fields=id,name,shortName",
+					"protocol": "http",
+					"host": [
+						"89",
+						"223",
+						"126",
+						"182"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"admin",
+						"projects"
+					],
+					"query": [
+						{
+							"key": "fields",
+							"value": "id,name,shortName"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "issue",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var rnd = Math.random();",
+							"",
+							"pm.collectionVariables.set(\"summary\", \"Erokhova AT \" + rnd);",
+							"pm.collectionVariables.set(\"description\", \"Description AT \" + rnd);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"SetCollectionVariables\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.collectionVariables.set(\"issue_id\", jsonData.id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"project\": {\n        \"id\": {{project_id}}\n    },\n    \"summary\": \"{{summary}}\",\n    \"description\": \"{{description}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://89.223.126.182:8080/api/issues",
+					"protocol": "http",
+					"host": [
+						"89",
+						"223",
+						"126",
+						"182"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"issues"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "issue",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"summary and description test\", function () {",
+							"    var jsonData = pm.response.json();",
+							"",
+							"    pm.expect(jsonData.summary).to.eql(pm.collectionVariables.get(\"summary\"));",
+							"    pm.expect(jsonData.description).to.eql(pm.collectionVariables.get(\"description\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://89.223.126.182:8080/api/issues/{{issue_id}}?fields=summary,description",
+					"protocol": "http",
+					"host": [
+						"89",
+						"223",
+						"126",
+						"182"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"issues",
+						"{{issue_id}}"
+					],
+					"query": [
+						{
+							"key": "fields",
+							"value": "summary,description"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update issue",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"state_name\", \"In Progress\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customFields\": [\n        {\n            \"name\": \"State\",\n            \"$type\": \"StateIssueCustomField\",\n            \"value\": {\n                \"name\": \"{{state_name}}\"\n            }\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://89.223.126.182:8080/api/issues/{{issue_id}}?fields=id,value(id,name,login,fullName),projectCustomField(id,field(id,name))",
+					"protocol": "http",
+					"host": [
+						"89",
+						"223",
+						"126",
+						"182"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"issues",
+						"{{issue_id}}"
+					],
+					"query": [
+						{
+							"key": "fields",
+							"value": "id,value(id,name,login,fullName),projectCustomField(id,field(id,name))"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "check issue state",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"State is 'In Progress'\", function () {",
+							"    var jsonData = pm.response.json();",
+							"",
+							"    pm.expect(jsonData.customFields[2].value.name).to.eql(pm.collectionVariables.get(\"state_name\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://89.223.126.182:8080/api/issues/{{issue_id}}?fields=customFields($type,id,projectCustomField($type,id,field($type,id,name)),value(name))",
+					"protocol": "http",
+					"host": [
+						"89",
+						"223",
+						"126",
+						"182"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"issues",
+						"{{issue_id}}"
+					],
+					"query": [
+						{
+							"key": "fields",
+							"value": "customFields($type,id,projectCustomField($type,id,field($type,id,name)),value(name))"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "perm:di52b2xvY2hhZXZhQGJrLnJ1.NDgtMQ==.HWxkLkmiPzZqlopxpfmy2tdIbptobh",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "project_id",
+			"value": ""
+		},
+		{
+			"key": "summary",
+			"value": ""
+		},
+		{
+			"key": "description",
+			"value": ""
+		},
+		{
+			"key": "issue_id",
+			"value": ""
+		},
+		{
+			"key": "state_name",
+			"value": "In Progress"
+		}
+	]
+}
